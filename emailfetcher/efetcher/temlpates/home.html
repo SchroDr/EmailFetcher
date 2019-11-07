@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>home</title>
+    </head>
+    <body>
+    <form>
+        <div class="lowin-group">
+            <label>关键字</label>
+            <input id="keyword" name="keyword">
+        </div>
+
+    </form>
+    <button id="sub" class="lowin-btn login-btn">
+        查询
+    </button>
+    <div id="result"></div>
+    <div style="margin-bottom: 20px">_________________________________________________________</div>
+   
+    </body>
+<script src="http://www.jq22.com/jquery/1.6.4/jquery.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        var name=$("#keyword")[0].value
+        $("#sub").click(function () {
+            if($("#keyword")[0].value.length==0){
+                alert("请输入关键词");
+            }
+            else {
+                $.ajax({
+                    url:"/search",
+                    type:"POST",
+                    data:{
+                        "keyword":$("#keyword")[0].value,
+                    },
+                    success:function (msg) {
+                        var resultBox=$("#result")
+                        if(msg.code=="0"){
+                            content=JSON.parse(msg.msg);
+                            resultBox.empty()
+                            for(i in content){
+                                var $a=$("<li>\n" +
+                                    "<ul>" +content[i].name+"</ul>\n" +
+                                    "<ul>"+content[i].emailContent+"</ul>\n" +
+                                    "            <ul>________________________________________________________</ul>\n" +
+                                    "        </li>");
+                                resultBox.append($a)
+                            }
+                        }
+                    }
+                })
+            }
+        })
+        
+    })
+</script>
+</html>

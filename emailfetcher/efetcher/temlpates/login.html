@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>email</title>
+	<link rel="stylesheet" href="../static/css/auth.css">
+</head>
+
+<body>
+	<div class="lowin">
+		<div class="lowin-wrapper">
+			<div class="lowin-box lowin-login">
+				<div class="lowin-box-inner">
+					<form>
+						<div class="lowin-group">
+                            <label>userkey</label>
+							<input id="userkey"name="userkey" class="lowin-input">
+						</div>
+
+					</form>
+                     <button id="sub"class="lowin-btn login-btn">登录</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script src="../static/js/auth.js"></script>
+	<script>
+
+	</script>
+<script src="http://www.jq22.com/jquery/1.6.4/jquery.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#sub").click(function () {
+            console.log($("#userkey"));
+            if($("#userkey")[0].value.length==0){
+                alert("请输入userkey");
+            }
+            else {
+                $.ajax({
+                    url:"/login",
+                    type:"POST",
+                    data:{
+                        "userkey":$("#userkey")[0].value,
+                    },
+                    success:function (code) {
+                        console.log(code);
+                        if(code.code=="1"){
+                            alert("不存在该userkey");
+                        }
+                        else  if(code.code=="0"){
+                            window.location.href="home"
+                        }
+                    }
+                })
+            }
+        })
+    })
+</script>
+</body>
+</html>

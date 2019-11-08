@@ -32,10 +32,10 @@ class Fetcher():
                 if typ == 'text/plain' or typ == 'text/html':
                     dr = re.compile(r'<[^>]+>', re.S)
                     raw_content = part.get_payload(decode=True)
-                    #try:
-                    content += dr.sub('', str(raw_content, errors='ignore'))
-                    #except:
-                    #    continue
+                    try:
+                        content += dr.sub('', str(raw_content, errors='ignore'))
+                    except:
+                        continue
         return content
 
     def parseUid(self, data):
@@ -46,37 +46,37 @@ class Fetcher():
         typ, data = self.serv.search(None, 'ALL')
         print(data)
         for num in data[0].split():
-            #try:
-            if self.index == None or self.index < int(num):
-                self.index = int(num)
-            elif self.index >= int(num):
+            try:
+                if self.index == None or self.index < int(num):
+                    self.index = int(num)
+                elif self.index >= int(num):
+                    continue
+                res, uid = self.serv.fetch(num, '(UID)')
+                uid = self.parseUid(uid[0].decode("utf-8"))
+                typ, data = self.serv.fetch(num, '(RFC822)')
+                text = data[0][1].decode('utf-8')
+                message = email.message_from_string(text)
+                content = self.parseBody(message)            
+                if re.search('Student registration', content):
+                    content = re.sub('\r\n', ' ', content)
+                    name = re.search(r'Hello\s+(.+?),', content).group(1)
+                    rua = datetime.datetime.now()
+                    t = message.get('date')
+                    timeStruct = time.strptime(t, "%a, %d %b %Y %H:%M:%S %z")
+                    timestamp = time.mktime(timeStruct)
+                    localTime = time.localtime(timestamp)
+                    strTime = time.strftime("%Y-%m-%d %H:%M:%S", localTime)
+                    #dt = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                    item = {
+                        'mailId': uid,
+                        'name': name,
+                        'content': content,
+                        'add_date': strTime
+                    }
+                    yield item
+            except:
+                print('Error')
                 continue
-            res, uid = self.serv.fetch(num, '(UID)')
-            uid = self.parseUid(uid[0].decode("utf-8"))
-            typ, data = self.serv.fetch(num, '(RFC822)')
-            text = data[0][1].decode('utf-8')
-            message = email.message_from_string(text)
-            content = self.parseBody(message)            
-            if re.search('Student registration', content):
-                content = re.sub('\r\n', ' ', content)
-                name = re.search(r'Hello\s+(.+?),', content).group(1)
-                rua = datetime.datetime.now()
-                t = message.get('date')
-                timeStruct = time.strptime(t, "%a, %d %b %Y %H:%M:%S %z")
-                timestamp = time.mktime(timeStruct)
-                localTime = time.localtime(timestamp)
-                strTime = time.strftime("%Y-%m-%d %H:%M:%S", localTime)
-                #dt = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                item = {
-                    'mailId': uid,
-                    'name': name,
-                    'content': content,
-                    'add_date': strTime
-                }
-                yield item
-            #except:
-            #    print('Error')
-            #    continue
 
 
     def dataFormatting(self, item):
@@ -105,12 +105,12 @@ class Fetcher():
     def begin(self):
         while True:
             print("获取开始！")
-            #try:
-            for item in self.getMail():
-                self.insertAndUpdate(item)
-            print("获取完毕！")
-            #except:
-            #    print("获取失败")
+            try:
+                for item in self.getMail():
+                    self.insertAndUpdate(item)
+                print("获取完毕！")
+            except:
+                print("获取失败")
             time.sleep(60)
         serv.close()
         serv.logout()

@@ -32,7 +32,7 @@ class Fetcher():
                     dr = re.compile(r'<[^>]+>', re.S)
                     raw_content = part.get_payload(decode=True)
                     try:
-                        content += dr.sub('', raw_content.decode('utf-8'))
+                        content += dr.sub('', str(raw_content, errors='ignore'))
                     except:
                         continue
         return content
@@ -60,7 +60,7 @@ class Fetcher():
                     content = re.sub('\r\n', ' ', content)
                     name = re.search(r'Hello\s+(.+?),', content).group(1)
                     t = message.get('date')
-                    timeStruct = time.strptime(t, "%a, %d %b %Y %H:%M:%S +0800")
+                    timeStruct = time.strptime(t, "%a, %d %b %Y %H:%M:%S %z")
                     timestamp = time.mktime(timeStruct)
                     localTime = time.localtime(timestamp)
                     strTime = time.strftime("%Y-%m-%d %H:%M:%S", localTime)

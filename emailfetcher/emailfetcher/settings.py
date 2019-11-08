@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'efetcher',
+    'django_crontab'
 ]
 
 MIDDLEWARE = [
@@ -127,4 +128,8 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'static'),
+)
+
+CRONJOBS = (
+    ('*/10 * * * *', 'efetcher.getMail.run', '>> log.out'),
 )

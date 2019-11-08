@@ -3,6 +3,7 @@ import email
 import re
 import pymysql
 import time
+import datetime
 
 
 class Fetcher():
@@ -55,10 +56,11 @@ class Fetcher():
                 typ, data = self.serv.fetch(num, '(RFC822)')
                 text = data[0][1].decode('utf-8')
                 message = email.message_from_string(text)
-                content = self.parseBody(message)
+                content = self.parseBody(message)            
                 if re.search('Student registration', content):
                     content = re.sub('\r\n', ' ', content)
                     name = re.search(r'Hello\s+(.+?),', content).group(1)
+                    rua = datetime.datetime.now()
                     t = message.get('date')
                     timeStruct = time.strptime(t, "%a, %d %b %Y %H:%M:%S %z")
                     timestamp = time.mktime(timeStruct)
@@ -73,7 +75,7 @@ class Fetcher():
                     }
                     yield item
             except:
-                print("内部失败")
+                print('Error')
                 continue
 
 

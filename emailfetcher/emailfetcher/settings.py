@@ -131,5 +131,5 @@ STATICFILES_DIRS = (
 )
 
 CRONJOBS = (
-    ('*/10 * * * *', 'efetcher.getMail.run', '>> log.out'),
+    ('*/10 * * * *', 'efetcher.getMail.run', '>> /var/EmailFetcher/emailfetcher/mail.log'),
 )

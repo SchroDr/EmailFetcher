@@ -127,7 +127,7 @@ pwd = "1000aFgh"
 #fetcher = Fetcher(host, username, pwd, port)
 #fetcher.begin()
 
-def run(fetcher):
+def run():
     host = "imappro.zoho.com"
     port = "993"
     username = "post@mail.shanl.in"

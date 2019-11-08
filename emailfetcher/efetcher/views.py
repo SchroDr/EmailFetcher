@@ -3,6 +3,7 @@ from django.http import JsonResponse
 from efetcher.models import User
 from efetcher.models import ContentMail
 import json
+import datetime
 
 
 def check_user(func):
@@ -34,7 +35,9 @@ def home(request):  # 主页
 
 
 def getMailContent(keyword):
-    getOne = ContentMail.objects.filter()
+    now = datetime.datetime.now()
+    start = now - datetime.timedelta(hours=1, minutes=0, seconds=0)
+    getOne = ContentMail.objects.filter(add_date__lt=start)
     mailList = []
     for i in getOne:
         if str(keyword).lower() in i.name.lower():

@@ -31,7 +31,10 @@ class Fetcher():
                 if typ == 'text/plain' or typ == 'text/html':
                     dr = re.compile(r'<[^>]+>', re.S)
                     raw_content = part.get_payload(decode=True)
-                    content += dr.sub('', raw_content.decode('utf-8'))
+                    try:
+                        content += dr.sub('', raw_content.decode('utf-8'))
+                    except:
+                        continue
         return content
 
     def parseUid(self, data):
@@ -55,11 +58,18 @@ class Fetcher():
                 content = self.parseBody(message)
                 if re.search('Student registration', content):
                     content = re.sub('\r\n', ' ', content)
-                    name = re.search(r'Hello\s+(\w+\s+\w+),', content).group(1)
+                    name = re.search(r'Hello\s+(.+?),', content).group(1)
+                    t = message.get('date')
+                    timeStruct = time.strptime(t, "%a, %d %b %Y %H:%M:%S +0800")
+                    timestamp = time.mktime(timeStruct)
+                    localTime = time.localtime(timestamp)
+                    strTime = time.strftime("%Y-%m-%d %H:%M:%S", localTime)
+                    #dt = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                     item = {
                         'mailId': uid,
                         'name': name,
-                        'content': content
+                        'content': content,
+                        'add_date': strTime
                     }
                     yield item
             except:

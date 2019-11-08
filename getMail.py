@@ -3,6 +3,7 @@ import email
 import re
 import pymysql
 import time
+import datetime
 
 
 class Fetcher():
@@ -31,7 +32,10 @@ class Fetcher():
                 if typ == 'text/plain' or typ == 'text/html':
                     dr = re.compile(r'<[^>]+>', re.S)
                     raw_content = part.get_payload(decode=True)
-                    content += dr.sub('', raw_content.decode('utf-8'))
+                    try:
+                        content += dr.sub('', raw_content.decode('utf-8'))
+                    except:
+                        continue
         return content
 
     def parseUid(self, data):
@@ -52,17 +56,26 @@ class Fetcher():
                 typ, data = self.serv.fetch(num, '(RFC822)')
                 text = data[0][1].decode('utf-8')
                 message = email.message_from_string(text)
-                content = self.parseBody(message)
+                content = self.parseBody(message)            
                 if re.search('Student registration', content):
                     content = re.sub('\r\n', ' ', content)
                     name = re.search(r'Hello\s+(\w+\s+\w+),', content).group(1)
+                    rua = datetime.datetime.now()
+                    t = message.get('date')
+                    timeStruct = time.strptime(t, "%a, %d %b %Y %H:%M:%S +0800")
+                    timestamp = time.mktime(timeStruct)
+                    localTime = time.localtime(timestamp)
+                    strTime = time.strftime("%Y-%m-%d %H:%M:%S", localTime)
+                    #dt = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                     item = {
                         'mailId': uid,
                         'name': name,
-                        'content': content
+                        'content': content,
+                        'add_date': strTime
                     }
                     yield item
             except:
+                print('Error')
                 continue
 
 

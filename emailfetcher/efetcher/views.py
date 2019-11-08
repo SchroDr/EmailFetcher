@@ -37,7 +37,7 @@ def home(request):  # 主页
 def getMailContent(keyword):
     now = datetime.datetime.now()
     start = now + datetime.timedelta(hours=7, minutes=0, seconds=0)
-    getOne = ContentMail.objects.filter(add_date__lt=start)
+    getOne = ContentMail.objects.filter(add_date__gt=start)
     mailList = []
     for i in getOne:
         if str(keyword).lower() in i.name.lower():

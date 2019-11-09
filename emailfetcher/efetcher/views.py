@@ -36,7 +36,7 @@ def home(request):  # 主页
 
 def getMailContent(keyword):
     now = datetime.datetime.now()
-    start = now - datetime.timedelta(hours=1, minutes=0, seconds=0)
+    start = now - datetime.timedelta(hours=23, minutes=0, seconds=0)
     getOne = ContentMail.objects.filter(add_date__gt=start)
     mailList = []
     for i in getOne:

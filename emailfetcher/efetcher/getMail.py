@@ -4,6 +4,7 @@ import re
 import pymysql
 import time
 import datetime
+import pytz
 
 
 class Fetcher():
@@ -23,6 +24,8 @@ class Fetcher():
         self.serv.select()
         self.index = None
         self.uid_pattern = re.compile(r'\d+ \(UID (\d+)\)')
+        self.indices = list()
+        self.utc = pytz.UTC
 
     def parseBody(self, message):
         content = ''

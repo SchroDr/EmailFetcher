@@ -45,27 +45,39 @@ class Fetcher():
     def getMail(self):
         typ, data = self.serv.search(None, 'ALL')
         print(data)
-        for num in data[0].split():
+        offset = 0
+        for num in reversed(data[0].split()):
+            if offset >= 20:
+                break
             try:
+                """
                 if self.index == None or self.index < int(num):
                     self.index = int(num)
                 elif self.index >= int(num):
                     continue
+                """
+                if int(num) in self.indices:
+                    pass
+                else:
+                    self.indices.append(int(num))
                 res, uid = self.serv.fetch(num, '(UID)')
                 uid = self.parseUid(uid[0].decode("utf-8"))
                 typ, data = self.serv.fetch(num, '(RFC822)')
                 text = data[0][1].decode('utf-8')
                 message = email.message_from_string(text)
-                content = self.parseBody(message)            
+                t = message.get('date')
+                timeStruct = time.strptime(t, "%a, %d %b %Y %H:%M:%S %z")
+                timestamp = time.mktime(timeStruct)
+                localTime = time.localtime(timestamp)
+                strTime = time.strftime("%Y-%m-%d %H:%M:%S", localTime)
+                real_time = self.utc.localize(datetime.datetime.now())
+                mail_time = datetime.datetime.strptime(t, "%a, %d %b %Y %H:%M:%S %z")
+                if real_time - datetime.timedelta(days = 1) >= mail_time:
+                    offset += 1
+                content = self.parseBody(message)     
                 if re.search('Student registration', content):
                     content = re.sub('\r\n', ' ', content)
                     name = re.search(r'Hello\s+(.+?),', content).group(1)
-                    rua = datetime.datetime.now()
-                    t = message.get('date')
-                    timeStruct = time.strptime(t, "%a, %d %b %Y %H:%M:%S %z")
-                    timestamp = time.mktime(timeStruct)
-                    localTime = time.localtime(timestamp)
-                    strTime = time.strftime("%Y-%m-%d %H:%M:%S", localTime)
                     #dt = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                     item = {
                         'mailId': uid,

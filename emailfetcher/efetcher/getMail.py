@@ -162,5 +162,3 @@ def run():
     pwd = "1000aFgh"
     fetcher = Fetcher(host, username, pwd, port)
     fetcher.runOnce()
-
-run()

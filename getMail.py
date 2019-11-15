@@ -79,6 +79,7 @@ class Fetcher():
                     offset += 1
                 content = self.parseBody(message)     
                 if re.search('Student registration', content):
+                    print(num)
                     content = re.sub('\r\n', ' ', content)
                     name = re.search(r'Hello\s+(.+?),', content).group(1)
                     #dt = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")

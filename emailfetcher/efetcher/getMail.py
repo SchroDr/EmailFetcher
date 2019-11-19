@@ -145,12 +145,12 @@ class Fetcher():
         k = 0
         while k < 10:
             print("获取开始！")
-            #try:
-            for item in self.getMail():
-                self.insertAndUpdate(item)
-            print("获取完毕！")
-            #except:
-            #    print("获取失败")
+            try:
+                for item in self.getMail():
+                    self.insertAndUpdate(item)
+                print("获取完毕！")
+            except:
+                print("获取失败")
             time.sleep(5)        
             k += 1
 

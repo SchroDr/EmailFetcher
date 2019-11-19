@@ -8,7 +8,7 @@ class User(models.Model):
 
 
 class ContentMail(models.Model):
-    mailId = models.CharField(max_length=255,primary_key=True)
+    mailId = models.IntegerField(primary_key=True)
     name = models.TextField(default='n')
     content = models.TextField(default='n')
     add_date = models.DateTimeField(default=timezone.now())

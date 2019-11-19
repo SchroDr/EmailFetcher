@@ -45,13 +45,21 @@ class Fetcher():
         match = self.uid_pattern.match(data)
         return match.group(1)
 
+    def getLatestMails(self, num = 20):
+        latest_mails_sql = 'SELECT mailID FROM efetcher_contentmail ORDER BY mailId DESC LIMIT 10'
+        self.cursor.execute(latest_mails_sql)
+        result = self.cursor.fetchall()
+        mails = [item[0] for item in result]
+        return mails
+
     def getMail(self):
+        mails = self.getLatestMails()
         typ, data = self.serv.search(None, 'ALL')
-        print(data)
+        #print(data)
         offset = 0
         for num in reversed(data[0].split()):
-            if offset >= 20:
-                break
+            #if offset >= 20:
+            #    break
             try:
                 """
                 if self.index == None or self.index < int(num):
@@ -59,12 +67,14 @@ class Fetcher():
                 elif self.index >= int(num):
                     continue
                 """
-                if int(num) in self.indices:
-                    pass
-                else:
-                    self.indices.append(int(num))
+                #if int(num) in self.indices:
+                #    pass
+                #else:
+                #    self.indices.append(int(num))
                 res, uid = self.serv.fetch(num, '(UID)')
                 uid = self.parseUid(uid[0].decode("utf-8"))
+                if int(uid) in mails:
+                    break
                 typ, data = self.serv.fetch(num, '(RFC822)')
                 text = data[0][1].decode('utf-8')
                 message = email.message_from_string(text)
@@ -75,11 +85,10 @@ class Fetcher():
                 strTime = time.strftime("%Y-%m-%d %H:%M:%S", localTime)
                 real_time = self.utc.localize(datetime.datetime.now())
                 mail_time = datetime.datetime.strptime(t, "%a, %d %b %Y %H:%M:%S %z")
-                if real_time - datetime.timedelta(days = 1) >= mail_time:
-                    offset += 1
+                #if real_time - datetime.timedelta(days = 1) >= mail_time:
+                #    offset += 1
                 content = self.parseBody(message)     
                 if re.search('Student registration', content):
-                    print(num)
                     content = re.sub('\r\n', ' ', content)
                     name = re.search(r'Hello\s+(.+?),', content).group(1)
                     #dt = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -89,6 +98,7 @@ class Fetcher():
                         'content': content,
                         'add_date': strTime
                     }
+                    print(name, uid)
                     yield item
             except:
                 print('Error')
@@ -127,7 +137,7 @@ class Fetcher():
                 print("获取完毕！")
             except:
                 print("获取失败")
-            time.sleep(60)
+            time.sleep(1)
         serv.close()
         serv.logout()
 

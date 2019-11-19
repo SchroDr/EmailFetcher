@@ -143,7 +143,7 @@ class Fetcher():
 
     def runOnce(self):
         k = 0
-        while k < 10:
+        while k < 120:
             print("获取开始！")
             try:
                 for item in self.getMail():
